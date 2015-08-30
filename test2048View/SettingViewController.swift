@@ -8,7 +8,8 @@
 
 import UIKit
 
-class SettingViewController:UIViewController
+// 下面有一处需要传值，所以必须继承这个class：UITextFieldDelegate
+class SettingViewController:UIViewController, UITextFieldDelegate
 {
     var txtNum:UITextField!
     var segDimension:UISegmentedControl!
