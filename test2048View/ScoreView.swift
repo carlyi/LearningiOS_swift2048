@@ -36,7 +36,7 @@ class ScoreView: UIView, ScoreViewProtocol
         
         super.init(frame: defaultFrame)
         
-        self.stype = (stype == ScoreType.Common ? "分数：":"最高分")
+        self.stype = (stype == ScoreType.Common ? "分数":"最高分")
         
         backgroundColor = UIColor.orangeColor()
         label.font = UIFont(name: "微软雅黑", size: 16)
