@@ -22,7 +22,8 @@ class SettingViewController:UIViewController, UITextFieldDelegate
     func setupControls()
     {
         //txtNum = ViewFactory.createTextField("",action:Selector(""), sender:self)
-        txtNum = ViewFactory.createTextField("", action: Selector("numChanged"), sender: self)
+        txtNum = ViewFactory.createTextField(""
+            ,action:Selector("numChanged"), sender:self)
         
         txtNum.frame = CGRect(x:80,y:100,width:200,height:30)
         txtNum.returnKeyType = UIReturnKeyType.Done
@@ -44,6 +45,5 @@ class SettingViewController:UIViewController, UITextFieldDelegate
         let labelDm = ViewFactory.createLabel("维度:")
         labelDm.frame = CGRect(x: 20, y: 200, width: 60, height: 30)
         self.view.addSubview(labelDm)
-        
     }
 }

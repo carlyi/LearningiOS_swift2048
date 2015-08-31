@@ -18,6 +18,8 @@
 		52CDA7121B91876F000256AE /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CDA7111B91876F000256AE /* SettingViewController.swift */; };
 		52CDA7141B931218000256AE /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CDA7131B931218000256AE /* ScoreView.swift */; };
 		52CDA7161B93565A000256AE /* ViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CDA7151B93565A000256AE /* ViewFactory.swift */; };
+		52CDA7181B948E10000256AE /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CDA7171B948E0F000256AE /* GameModel.swift */; };
+		52CDA71A1B9491A2000256AE /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CDA7191B9491A2000256AE /* TileView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +48,8 @@
 		52CDA7111B91876F000256AE /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		52CDA7131B931218000256AE /* ScoreView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 		52CDA7151B93565A000256AE /* ViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewFactory.swift; sourceTree = "<group>"; };
+		52CDA7171B948E0F000256AE /* GameModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
+		52CDA7191B9491A2000256AE /* TileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +96,8 @@
 				523FA7EF1B5B95BB006688E9 /* Main.storyboard */,
 				52CDA70D1B917F6C000256AE /* MainTabViewControllrt.swift */,
 				52CDA7111B91876F000256AE /* SettingViewController.swift */,
+				52CDA7171B948E0F000256AE /* GameModel.swift */,
+				52CDA7191B9491A2000256AE /* TileView.swift */,
 				52CDA70F1B9186CE000256AE /* MainViewController.swift */,
 				52CDA7151B93565A000256AE /* ViewFactory.swift */,
 				52CDA7131B931218000256AE /* ScoreView.swift */,
@@ -231,7 +237,9 @@
 				523FA7EE1B5B95BB006688E9 /* ViewController.swift in Sources */,
 				523FA7EC1B5B95BB006688E9 /* AppDelegate.swift in Sources */,
 				52CDA70E1B917F6C000256AE /* MainTabViewControllrt.swift in Sources */,
+				52CDA71A1B9491A2000256AE /* TileView.swift in Sources */,
 				52CDA7101B9186CE000256AE /* MainViewController.swift in Sources */,
+				52CDA7181B948E10000256AE /* GameModel.swift in Sources */,
 				52CDA7161B93565A000256AE /* ViewFactory.swift in Sources */,
 				52CDA7141B931218000256AE /* ScoreView.swift in Sources */,
 			);
