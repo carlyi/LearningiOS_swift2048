@@ -122,7 +122,7 @@ class MainViewController:UIViewController
         }
         //随机生成行号和列号
         var i = 0
-        for i in 0..<4
+        for i in 0..<4  //多随机生成一些数。填满4＊4的画面
         {
         let col =  Int(arc4random_uniform(UInt32(dimension)))
         let row = Int(arc4random_uniform(UInt32(dimension)))
