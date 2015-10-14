@@ -21,9 +21,7 @@ class SettingViewController:UIViewController, UITextFieldDelegate
     
     func setupControls()
     {
-        //txtNum = ViewFactory.createTextField("",action:Selector(""), sender:self)
-        txtNum = ViewFactory.createTextField(""
-            ,action:Selector("numChanged"), sender:self)
+        txtNum = ViewFactory.createTextField("",action:Selector(""), sender:self)
         
         txtNum.frame = CGRect(x:80,y:100,width:200,height:30)
         txtNum.returnKeyType = UIReturnKeyType.Done

@@ -58,21 +58,6 @@ class ViewFactory{
         return label
     }
     
-/*
-    class func createTextField(value:String, action:Selector, sender:UITextFieldDelegate) -> UITextField
-    {
-        var textField = UITextField(frame: ViewFactory.getDefaultFrame())
-        textField.backgroundColor = UIColor.clearColor()
-        textField.textColor = UIColor.blackColor()
-        textField.text = value
-        textField.borderStyle = UITextBorderStyle.RoundedRect
-        textField.adjustsFontSizeToFitWidth = true
-        textField.delegate = sender
-
-        
-        return textField
-    }
-*/
     class func createTextField(value:String, action:Selector, sender:UITextFieldDelegate) -> UITextField
     {
         var textField = UITextField(frame:ViewFactory.getDefaultFrame())

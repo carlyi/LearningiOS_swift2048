@@ -12,7 +12,8 @@ import  UIKit
 class GameModel
 {
     var dimension:Int = 0
-    var tiles:Array<Int>
+    var tiles:Array<Int>!
+    var mtiles:Array<Int>!
     var scoredelegate:ScoreViewProtocol!
     var bestscoredelegage:ScoreViewProtocol!
     var maxnumber:Int = 0
@@ -92,6 +93,169 @@ class GameModel
         tiles[index] = value
         
         return true
+    }
+    
+    func reflowUp()
+    {
+        copyToMtiles()
+        var index: Int
+        
+        for var i=dimension-1; i>0; i--
+        {
+            for j in 0..<dimension
+            {
+                index = self.dimension * i + j
+                if(mtiles[index-self.dimension] == 0 && (mtiles[index] > 0))
+                {
+                    mtiles[index-self.dimension] = mtiles[index]
+                    mtiles[index]=0
+                    
+                    var subindex: Int = index
+                    while(subindex+self.dimension < mtiles.count)
+                    {
+                        if(mtiles[subindex+self.dimension] > 0)
+                        {
+                            mtiles[subindex] = mtiles[subindex+self.dimension]
+                            mtiles[subindex+self.dimension] = 0
+                        }
+                        subindex += self.dimension
+                    }
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    
+    func reflowDown()
+    {
+        copyToMtiles()
+        var index:Int
+        //从第一行开始往下找
+        //只找到dimension-1行，因为最下面一行不用再动了
+        for i in 0..<dimension-1 {
+            for j in 0..<dimension {
+                index = self.dimension * i + j
+                //如果当前位置有值，下一行相应的位置没有值
+                if (mtiles[index+self.dimension] == 0)
+                    && (mtiles[index] > 0)
+                {
+                    //把这一行的值赋值到下一行
+                    mtiles[index+self.dimension] = mtiles[index]
+                    mtiles[index] = 0
+                    var subindex:Int = index
+                    //对后面的内容进行检查
+                    //因为当下面的行发生了移动，得让上面的行跟上
+                    //否则滑动重排之后，会出现空隙
+                    while((subindex-self.dimension)>=0)
+                    {
+                        if (mtiles[subindex-self.dimension]>0)
+                        {
+                            mtiles[subindex] = mtiles[subindex-self.dimension]
+                            mtiles[subindex-self.dimension] = 0
+                        }
+                        subindex -= self.dimension
+                    }
+                    
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    func reflowLeft()
+    {
+        copyToMtiles()
+        var index:Int
+        //从最右列开始往左找
+        //只找到第2列，因为第1列的数据不用再动了
+        for i in 0..<dimension {
+            for var j=dimension-1; j>0; j-- {
+                index = self.dimension * i + j
+                //如果当前位置有值，而且其左边一列，即前一个位置没有值，则移动
+                if (mtiles[index-1] == 0)
+                    && (mtiles[index] > 0)
+                {
+                    mtiles[index-1] = mtiles[index]
+                    mtiles[index] = 0
+                    var subindex:Int = index
+                    //对右边的内容进行检查，如果出现空隙则补上
+                    while((subindex+1) < i*dimension+dimension)
+                    {
+                        if (mtiles[subindex+1]>0)
+                        {
+                            mtiles[subindex] = mtiles[subindex+1]
+                            mtiles[subindex+1] = 0
+                        }
+                        subindex += 1
+                    }
+                    
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    
+    func reflowRight()
+    {
+        copyToMtiles()
+        var index:Int
+        //从第1列开始往右找
+        //只找到dimension-1列，因为最右面一列不用再动了
+        for i in 0..<dimension {
+            for j in 0..<dimension-1 {
+                index = self.dimension * i + j
+                //如果当前位置有值，而且右边位置没有值
+                if (mtiles[index+1] == 0)
+                    && (mtiles[index] > 0)
+                {
+                    mtiles[index+1] = mtiles[index]
+                    mtiles[index] = 0
+                    var subindex:Int = index
+                    //对后面的内容进行检查
+                    //补上右边的空白块，以免出现空隙
+                    while((subindex-1) > i*dimension-1)
+                    {
+                        if (mtiles[subindex-1]>0)
+                        {
+                            mtiles[subindex] = mtiles[subindex-1]
+                            mtiles[subindex-1] = 0
+                        }
+                        subindex -= 1
+                    }
+                    
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    
+    func copyToMtiles()
+    {
+        for i in 0..<self.dimension * self.dimension
+        {
+            mtiles[i] = tiles[i]
+        }
+    }
+    
+    func copyFromMtiles()
+    {
+        for i in 0..<self.dimension * self.dimension
+        {
+            tiles[i] = mtiles[i]
+        }
+        
+        
+    }
+    
+    func isSuccess() -> Bool
+    {
+        for i in 0..<(dimension*dimension)
+        {
+            if(tiles[i] >= maxnumber)
+            {
+                return true
+            }
+        }
+        return false
     }
 
 }

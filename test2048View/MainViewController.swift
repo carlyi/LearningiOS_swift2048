@@ -50,6 +50,7 @@ class MainViewController:UIViewController
         self.view.backgroundColor = UIColor.whiteColor()
         setupGameMap()
         setupScoreLabels()
+        setupSwipeGuestures()
         self.gmodel = GameModel(dimension: self.dimension,
             maxnumber:self.maxnumber, score:score, bestscore:bestscore)
         for i in 0..<2
@@ -97,6 +98,59 @@ class MainViewController:UIViewController
         }
     }
     
+    func setupSwipeGuestures()
+    {
+        //监控向上的方向，相应的处理方法 swipeUp
+        let upSwipe = UISwipeGestureRecognizer(target:self, action:Selector("swipeUp"))
+        
+        upSwipe.numberOfTouchesRequired = 1
+        upSwipe.direction = UISwipeGestureRecognizerDirection.Up
+        self.view.addGestureRecognizer(upSwipe)
+        //监控向下的方向，相应的处理方法 swipeDown
+        let downSwipe = UISwipeGestureRecognizer(target: self, action: Selector("swipeDown"))
+        downSwipe.numberOfTouchesRequired = 1
+        downSwipe.direction = UISwipeGestureRecognizerDirection.Down
+        self.view.addGestureRecognizer(downSwipe)
+        //监控向左的方向，相应的处理方法 swipeLeft
+        let leftSwipe = UISwipeGestureRecognizer(target: self, action: Selector("swipeLeft"))
+        leftSwipe.numberOfTouchesRequired = 1
+        leftSwipe.direction = UISwipeGestureRecognizerDirection.Left
+        self.view.addGestureRecognizer(leftSwipe)
+        //监控向右的方向，相应的处理方法 swipeRight
+        let rightSwipe = UISwipeGestureRecognizer(target: self, action: Selector("swipeRight"))
+        rightSwipe.numberOfTouchesRequired = 1
+        rightSwipe.direction = UISwipeGestureRecognizerDirection.Right
+        self.view.addGestureRecognizer(rightSwipe)
+        
+    }
+    func _showTip(direction:String)
+    {
+        let alertController = UIAlertController(title: "提示", message: "你刚刚向\(direction)滑动了！", preferredStyle: UIAlertControllerStyle.Alert)
+        alertController.addAction(UIAlertAction(title: "确定", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    func swipeUp()
+    {
+        println("swipeUp")
+        _showTip("上")
+        
+    }
+    func swipeDown()
+    {
+        println("swipeDown")
+        _showTip("下")
+    }
+    func swipeLeft()
+    {
+        println("swipeLeft")
+        _showTip("左")
+    }
+    func swipeRight()
+    {
+        println("swipeRight")
+        _showTip("右")
+    }
+    
     func insertTile(pos:(Int, Int), value:Int)
     {
         let (row, col) = pos;
@@ -107,6 +161,42 @@ class MainViewController:UIViewController
         let tile = TileView(pos: CGPointMake(x,y), width:width, value:value)
         self.view.addSubview(tile)
         self.view.bringSubviewToFront(tile)
+        
+        //alpha属性为0.0时视图完全透明，为1.0时完全不透明
+        tile.alpha = 0.0
+        UIView.animateWithDuration(1, delay: 0.01, options: UIViewAnimationOptions.CurveEaseInOut, animations:
+            {
+                () -> Void in
+            },
+            completion: {
+                (finished:Bool) -> Void in
+                UIView.animateWithDuration(1, animations: {
+                    () -> Void in
+                    tile.alpha = 1
+                })
+            })
+        
+/*
+        //先将数字块大小置为原始尺寸的 1/10
+        tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.1,0.1))
+        
+        //设置动画效果，动画时间长度 1 秒。
+        UIView.animateWithDuration(1, delay:0.01, options:UIViewAnimationOptions.TransitionNone, animations:
+            {
+                ()-> Void in
+                //在动画中，数字块有一个角度的旋转。
+                tile.layer.setAffineTransform(CGAffineTransformMakeRotation(90))
+            },
+            completion:{
+                (finished:Bool) -> Void in
+                UIView.animateWithDuration(1, animations:{
+                    ()-> Void in
+                    //完成动画时，数字块复原
+                    tile.layer.setAffineTransform(CGAffineTransformIdentity)
+                })
+                
+        })
+*/
     }
     
     func genNumber()
@@ -122,154 +212,22 @@ class MainViewController:UIViewController
         }
         //随机生成行号和列号
         var i = 0
-        for i in 0..<4  //多随机生成一些数。填满4＊4的画面
+        for i in 0..<5
         {
-        let col =  Int(arc4random_uniform(UInt32(dimension)))
-        let row = Int(arc4random_uniform(UInt32(dimension)))
-        if(gmodel.isFull())
-        {
-            println("位置已经满了")
-            return
-        }
-        if(gmodel.setPosition(row, col:col, value:seed)==false)
-        {
-            genNumber()
-            return
-        }
-        //执行后续操作
-        insertTile((row, col), value: seed)
-        }
-    }
-}
-
-/*
-class MainViewController:UIViewController
-{
-    //game vector setting
-    var dimension:Int = 4
-    //max level 
-    //var maxnumber:Int = 2048
-    //游戏过关最大值
-    var maxnumber:Int = 2048 {
-        didSet{
-            gmodel.maxnumber = maxnumber
-        }
-    }
-    
-    //width of the box
-    var width:CGFloat = 50
-    //space between the box
-    var padding:CGFloat = 6
-    
-    //save the number of background picture
-    var backgrounds:Array<UIView>!
-    
-    var gmodel:GameModel!
-    var score:ScoreView!
-    
-    var bestscore:ScoreView!
-    
-    init()
-    {
-        self.backgrounds = Array<UIView>()
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        //set the MainView to white background
-        self.view.backgroundColor = UIColor.whiteColor()
-        setupGameMap()
-        setupScoreLabels()
-        self.gmodel = GameModel(dimension: self.dimension,
-            maxnumber:self.maxnumber, score:score, bestscore:bestscore)
-        for i in 0..<2
-        {
-            genNumber()
-        }
-    }
-    
-    func setupScoreLabels()
-    {
-        score = ScoreView(stype: ScoreType.Common)
-        score.frame.origin = CGPointMake(50, 80)
-        score.changeScore(value: 0)
-        self.view.addSubview(score)
-        
-        bestscore = ScoreView(stype: ScoreType.Best)
-        bestscore.frame.origin.x = 170
-        bestscore.frame.origin.y = 80
-        bestscore.changeScore(value: 0)
-        self.view.addSubview(bestscore)
-    }
-    
-    func setupGameMap()
-    {
-        var x:CGFloat = 50
-        var y:CGFloat = 150
-        
-        for i in 0..<dimension
-        {
-            print(i)
-            y = 150
-            for j in 0..<dimension
+            let col =  Int(arc4random_uniform(UInt32(dimension)))
+            let row = Int(arc4random_uniform(UInt32(dimension)))
+            if(gmodel.isFull())
             {
-                //init the View
-                var background = UIView(frame: CGRectMake(x, y, width, width))
-                background.backgroundColor = UIColor.darkGrayColor()
-                
-                self.view.addSubview(background)
-                //save the View for later use
-                backgrounds.append(background)
-                y += padding + width
+                println("位置已经满了")
+                return
             }
-            x += padding + width
+            if(gmodel.setPosition(row, col:col, value:seed)==false)
+            {
+                genNumber()
+                return
+            }
+            //执行后续操作
+            insertTile((row, col), value: seed)
         }
     }
-    
-    func insertTile(pos:(Int, Int), value:Int)
-    {
-        let (row, col) = pos;
-        
-        let x = 50 + CGFloat(col) * (width + padding)
-        let y = 150 + CGFloat(row) * (width + padding)
-        
-        let tile = TileView(pos: CGPointMake(x,y), width:width, value:value)
-        self.view.addSubview(tile)
-        self.view.bringSubviewToFront(tile)
-    }
-    
-    func genNumber()
-    {
-        //用于确定随机数的概率
-        let randv = Int(arc4random_uniform(10))
-        println(randv)
-        var seed:Int = 2
-        //因为有 10%的机会，出现1，所以这里是 10%的机会给 4
-        if(randv == 1)
-        {
-            seed = 4
-        }
-        //随机生成行号和列号
-        let col =  Int(arc4random_uniform(UInt32(dimension)))
-        let row = Int(arc4random_uniform(UInt32(dimension)))
-        if(gmodel.isFull())
-        {
-            println("位置已经满了")
-            return
-        }
-        if(gmodel.setPosition(row, col:col, value:seed)==false)
-        {
-            genNumber()
-            return
-        }
-        //执行后续操作
-        insertTile((row, col), value: seed)
-    }
-
 }
-*/
