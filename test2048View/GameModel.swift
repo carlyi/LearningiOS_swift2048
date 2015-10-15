@@ -28,6 +28,7 @@ class GameModel
         self.maxnumber = maxnumber
         
         self.tiles = Array<Int>(count: self.dimension*self.dimension, repeatedValue: 0)
+        self.mtiles = Array<Int>(count: self.dimension*self.dimension, repeatedValue: 0)
     }
     
     //find the empty space
@@ -230,8 +231,10 @@ class GameModel
     
     func copyToMtiles()
     {
+        println(self.dimension)
         for i in 0..<self.dimension * self.dimension
         {
+            println(i)
             mtiles[i] = tiles[i]
         }
     }
@@ -257,5 +260,92 @@ class GameModel
         }
         return false
     }
+    
+    
+    //向上合并的方法
+    func  mergeUp()
+    {
+        copyToMtiles()
+        var index:Int
+        //从上到上合
+        for var i=dimension-1; i>0; i--
+        {
+            for j in 0..<dimension
+            {
+                index = self.dimension * i + j
+                //如果相同列上，而且相邻的数字相等
+                if((mtiles[index] > 0) && (mtiles[index-self.dimension] == mtiles[index]))
+                {
+                    //将数字合并到上面行的位置 ，下面的数字清空
+                    mtiles[index-self.dimension] = mtiles[index] * 2
+                    mtiles[index] = 0
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    //向下合并的方法
+    func mergeDown()
+    {
+        copyToMtiles()
+        var index:Int
+        //从上到下合
+        for i in 0..<dimension-1 {
+            for j in 0..<dimension {
+                
+                index = self.dimension * i + j
+                //如果下一行的数字和当前行数字相等
+                if (mtiles[index] > 0 && mtiles[index+self.dimension] == mtiles[index])
+                {
+                    //将叠加合并后的结果放置到下一行。上一行的数字清空
+                    mtiles[index+self.dimension] = mtiles[index] * 2
+                    mtiles[index] = 0
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    //向左合并的方法
+    func mergeLeft()
+    {
+        copyToMtiles()
+        var index:Int
+        //从右到左合并
+        for i in 0..<dimension {
+            for var j=dimension-1; j>0; j-- {
+                index = self.dimension * i + j
+                //如果右边和左边的数字相邻相等，则合并
+                if (mtiles[index] > 0 && mtiles[index-1] == mtiles[index])
+                {
+                    //叠加合并到左边一列，右边一列当前位置上的数字清空
+                    mtiles[index-1] = mtiles[index] * 2
+                    mtiles[index] = 0
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    //向右合并的方法
+    func mergeRight()
+    {
+        copyToMtiles()
+        var index:Int
+        //从左向右合
+        for i in 0..<dimension {
+            for j in 0..<dimension-1 {
+                index = self.dimension * i + j
+                //如果当前数字和正右边相邻的数字相等，则可以合并
+                if (mtiles[index] > 0 && mtiles[index+1] == mtiles[index])
+                {
+                    //叠加合并到右边一列，左边当前位置相应的数字清空
+                    mtiles[index+1] = mtiles[index] * 2
+                    mtiles[index] = 0
+                }
+            }
+        }
+        copyFromMtiles()
+    }
+    
+
 
 }

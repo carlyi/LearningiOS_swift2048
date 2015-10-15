@@ -7,6 +7,14 @@
 //
 
 import UIKit
+
+enum Animation2048Type
+{
+    case None   //无动画
+    case New    //新出现动画
+    case Merge  //合并动画
+}
+
 class MainViewController:UIViewController
 {
     //游戏方格维度
@@ -33,10 +41,17 @@ class MainViewController:UIViewController
     
     var bestscore:ScoreView!
     
+    //保存界面上的数字Label数据
+    var tiles: Dictionary<NSIndexPath, TileView>!
+    //保存实际数字值的一个字典
+    var tileVals: Dictionary<NSIndexPath, Int>!
+    
     init()
     {
         self.backgrounds = Array<UIView>()
         super.init(nibName:nil, bundle:nil)
+        self.tiles = Dictionary()
+        self.tileVals = Dictionary()
         
     }
     required init(coder aDecoder: NSCoder) {
@@ -74,6 +89,7 @@ class MainViewController:UIViewController
         self.view.addSubview(bestscore)
         
     }
+    
     func setupGameMap()
     {
         var x:CGFloat = 50
@@ -129,12 +145,46 @@ class MainViewController:UIViewController
         alertController.addAction(UIAlertAction(title: "确定", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alertController, animated: true, completion: nil)
     }
+    func printTiles(tiles:Array<Int>)
+    {
+        var count = tiles.count
+        for var i=0; i<count; i++
+        {
+            if (i+1) % Int(dimension) == 0
+            {
+                println(tiles[i])
+            }
+            else
+            {
+                print("\(tiles[i])\t")
+            }
+        }
+        
+        println("")
+        
+    }
     func swipeUp()
     {
         println("swipeUp")
-        _showTip("上")
+        
+        println(self.dimension * self.dimension)
+        println()
+        gmodel.reflowUp()
+        gmodel.mergeUp()
+        gmodel.reflowUp()
+        
+        printTiles(gmodel.tiles)
+        printTiles(gmodel.mtiles)
+        
+        //  resetUI()
+        initUI()
+        if(!gmodel.isSuccess())
+        {
+            genNumber()
+        }
         
     }
+
     func swipeDown()
     {
         println("swipeDown")
@@ -230,4 +280,96 @@ class MainViewController:UIViewController
             insertTile((row, col), value: seed)
         }
     }
+    
+    //根据数据模型重新
+    func initUI()
+    {
+        
+        var index:Int
+        var key:NSIndexPath
+        var tile:TileView
+        var tileVal:Int
+        
+        for i in 0..<dimension
+        {
+            for j in 0..<dimension
+            {
+                index = i*self.dimension + j
+                key = NSIndexPath(forRow:i, inSection:j)
+                //原来界面没有值，模型数据中有值
+                if((gmodel.tiles[index]>0) && tileVals.indexForKey(key)==nil)
+                {
+                    insertTile((i,j),value:gmodel.tiles[index], atype:Animation2048Type.Merge)
+                }
+                //原来界面中有值，现在模型中没有值 了
+                if((gmodel.tiles[index] == 0) && (tileVals.indexForKey(key) != nil))
+                {
+                    tile = tiles[key]!
+                    tile.removeFromSuperview()
+                    
+                    tiles.removeValueForKey(key)
+                    tileVals.removeValueForKey(key)
+                }
+                //原来值，但是现在还有值
+                if((gmodel.tiles[index] > 0) && (tileVals.indexForKey(key) != nil))
+                {
+                    tileVal = tileVals[key]!
+                    //如果不相等，换掉值就可以了
+                    if(tileVal != gmodel.tiles[index])
+                    {
+                        tile = tiles[key]!
+                        tile.value = gmodel.tiles[index]
+                        tileVals[key] = gmodel.tiles[index]
+                    }
+                    //如果相等，当然什么也不用做了
+                }
+                
+            }
+        }
+    }
+    
+    func insertTile(pos:(Int, Int), value:Int, atype:Animation2048Type)
+    {
+        let (row, col) = pos;
+        
+        let x = 50 + CGFloat(col) * (width + padding)
+        let y = 150 + CGFloat(row) * (width + padding)
+        
+        let tile = TileView(pos: CGPointMake(x,y), width:width, value:value)
+        self.view.addSubview(tile)
+        self.view.bringSubviewToFront(tile)
+        //保存数字块视图和数字块上数字的键，是 NSIndexPath 类型
+        var index = NSIndexPath(forRow: row, inSection: col)
+        tiles[index] = tile
+        tileVals[index] = value
+        //设置动画的初始状态
+        //如果不需要动画
+        if(atype == Animation2048Type.None)
+        {
+            return
+        }
+        else if(atype == Animation2048Type.New) //新生成数字
+        {
+            tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.1,0.1))
+        }
+        else if(atype == Animation2048Type.Merge) //合并中的数字
+        {
+            tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.8,0.8))
+        }
+        UIView.animateWithDuration(0.3, delay:0.1, options:UIViewAnimationOptions.TransitionNone, animations:
+            {
+                ()-> Void in
+                tile.layer.setAffineTransform(CGAffineTransformMakeScale(1,1))
+            },
+            completion:{
+                (finished:Bool) -> Void in
+                UIView.animateWithDuration(0.08, animations:{
+                    ()-> Void in
+                    tile.layer.setAffineTransform(CGAffineTransformIdentity)
+                })
+                
+        })
+    }
+
+
 }
