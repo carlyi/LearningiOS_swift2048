@@ -15,7 +15,7 @@ class TileView : UIView
     let colorMap = [
         2 : UIColor.redColor(),
         4 : UIColor.orangeColor(),
-        8 : UIColor.yellowColor(),
+        8 : UIColor.magentaColor(),
         16 : UIColor.greenColor(),
         32 : UIColor.brownColor(),
         64 : UIColor.blueColor(),

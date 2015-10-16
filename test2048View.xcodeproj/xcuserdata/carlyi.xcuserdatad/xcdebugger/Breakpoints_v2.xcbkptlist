@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "test2048View/MainViewController.swift"
-            timestampString = "466617606.705647"
+            timestampString = "466702476.835713"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "302"
-            endingLineNumber = "302"
+            startingLineNumber = "382"
+            endingLineNumber = "382"
             landmarkName = "initUI()"
             landmarkType = "5">
          </BreakpointContent>

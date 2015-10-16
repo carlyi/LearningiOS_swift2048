@@ -26,7 +26,7 @@ class GameModel
         self.bestscoredelegage = bestscore
         self.dimension = dimension
         self.maxnumber = maxnumber
-        
+
         self.tiles = Array<Int>(count: self.dimension*self.dimension, repeatedValue: 0)
         self.mtiles = Array<Int>(count: self.dimension*self.dimension, repeatedValue: 0)
     }

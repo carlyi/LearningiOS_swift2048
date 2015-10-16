@@ -188,20 +188,57 @@ class MainViewController:UIViewController
     func swipeDown()
     {
         println("swipeDown")
-        _showTip("下")
+        gmodel.reflowDown()
+        gmodel.mergeDown()
+        gmodel.reflowDown()
+        
+        printTiles(gmodel.tiles)
+        printTiles(gmodel.mtiles)
+        
+        //  resetUI()
+        initUI()
+        if(!gmodel.isSuccess())
+        {
+            genNumber()
+        }
     }
+    
     func swipeLeft()
     {
         println("swipeLeft")
-        _showTip("左")
+        gmodel.reflowLeft()
+        gmodel.mergeLeft()
+        gmodel.reflowLeft()
+        
+        printTiles(gmodel.tiles)
+        printTiles(gmodel.mtiles)
+        
+        //  resetUI()
+        initUI()
+        if(!gmodel.isSuccess())
+        {
+            genNumber()
+        }
     }
+    
     func swipeRight()
     {
         println("swipeRight")
-        _showTip("右")
+        gmodel.reflowRight()
+        gmodel.mergeRight()
+        gmodel.reflowRight()
+        printTiles(gmodel.tiles)
+        printTiles(gmodel.mtiles)
+        
+        //   resetUI()
+        initUI()
+        if(!gmodel.isSuccess())
+        {
+            genNumber()
+        }
     }
-    
-    func insertTile(pos:(Int, Int), value:Int)
+
+    func insertTile(pos:(Int, Int), value:Int, atype:Animation2048Type)
     {
         let (row, col) = pos;
         
@@ -211,43 +248,86 @@ class MainViewController:UIViewController
         let tile = TileView(pos: CGPointMake(x,y), width:width, value:value)
         self.view.addSubview(tile)
         self.view.bringSubviewToFront(tile)
-        
-        //alpha属性为0.0时视图完全透明，为1.0时完全不透明
-        tile.alpha = 0.0
-        UIView.animateWithDuration(1, delay: 0.01, options: UIViewAnimationOptions.CurveEaseInOut, animations:
-            {
-                () -> Void in
-            },
-            completion: {
-                (finished:Bool) -> Void in
-                UIView.animateWithDuration(1, animations: {
-                    () -> Void in
-                    tile.alpha = 1
-                })
-            })
-        
-/*
-        //先将数字块大小置为原始尺寸的 1/10
-        tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.1,0.1))
-        
-        //设置动画效果，动画时间长度 1 秒。
-        UIView.animateWithDuration(1, delay:0.01, options:UIViewAnimationOptions.TransitionNone, animations:
+        //保存数字块视图和数字块上数字的键，是 NSIndexPath 类型
+        var index = NSIndexPath(forRow: row, inSection: col)
+        tiles[index] = tile
+        tileVals[index] = value
+        //设置动画的初始状态
+        //如果不需要动画
+        if(atype == Animation2048Type.None)
+        {
+            return
+        }
+        else if(atype == Animation2048Type.New) //新生成数字
+        {
+            tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.1,0.1))
+        }
+        else if(atype == Animation2048Type.Merge) //合并中的数字
+        {
+            tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.8,0.8))
+        }
+        UIView.animateWithDuration(0.1, delay:0.01, options:UIViewAnimationOptions.TransitionNone, animations:
             {
                 ()-> Void in
-                //在动画中，数字块有一个角度的旋转。
-                tile.layer.setAffineTransform(CGAffineTransformMakeRotation(90))
+                tile.layer.setAffineTransform(CGAffineTransformMakeScale(1,1))
             },
             completion:{
                 (finished:Bool) -> Void in
-                UIView.animateWithDuration(1, animations:{
+                UIView.animateWithDuration(0.08, animations:{
                     ()-> Void in
-                    //完成动画时，数字块复原
                     tile.layer.setAffineTransform(CGAffineTransformIdentity)
                 })
                 
         })
-*/
     }
+//    func insertTile(pos:(Int, Int), value:Int)
+//    {
+//        let (row, col) = pos;
+//
+//        let x = 50 + CGFloat(col) * (width + padding)
+//        let y = 150 + CGFloat(row) * (width + padding)
+//        
+//        let tile = TileView(pos: CGPointMake(x,y), width:width, value:value)
+//        self.view.addSubview(tile)
+//        self.view.bringSubviewToFront(tile)
+//        
+//        //alpha属性为0.0时视图完全透明，为1.0时完全不透明
+////        tile.alpha = 0.0
+//        tile.alpha = 1
+//        UIView.animateWithDuration(2, delay: 1, options: UIViewAnimationOptions.TransitionNone, animations:
+//            {
+//                () -> Void in
+//            },
+//            completion: {
+//                (finished:Bool) -> Void in
+//                UIView.animateWithDuration(1, animations: {
+//                    () -> Void in
+//                    tile.alpha = 1
+//                })
+//            })
+//        
+///*
+//        //先将数字块大小置为原始尺寸的 1/10
+//        tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.1,0.1))
+//        
+//        //设置动画效果，动画时间长度 1 秒。
+//        UIView.animateWithDuration(1, delay:0.01, options:UIViewAnimationOptions.TransitionNone, animations:
+//            {
+//                ()-> Void in
+//                //在动画中，数字块有一个角度的旋转。
+//                tile.layer.setAffineTransform(CGAffineTransformMakeRotation(90))
+//            },
+//            completion:{
+//                (finished:Bool) -> Void in
+//                UIView.animateWithDuration(1, animations:{
+//                    ()-> Void in
+//                    //完成动画时，数字块复原
+//                    tile.layer.setAffineTransform(CGAffineTransformIdentity)
+//                })
+//                
+//        })
+//*/
+//    }
     
     func genNumber()
     {
@@ -277,7 +357,7 @@ class MainViewController:UIViewController
                 return
             }
             //执行后续操作
-            insertTile((row, col), value: seed)
+            insertTile((row, col), value: seed, atype:Animation2048Type.New)
         }
     }
     
@@ -328,48 +408,5 @@ class MainViewController:UIViewController
         }
     }
     
-    func insertTile(pos:(Int, Int), value:Int, atype:Animation2048Type)
-    {
-        let (row, col) = pos;
-        
-        let x = 50 + CGFloat(col) * (width + padding)
-        let y = 150 + CGFloat(row) * (width + padding)
-        
-        let tile = TileView(pos: CGPointMake(x,y), width:width, value:value)
-        self.view.addSubview(tile)
-        self.view.bringSubviewToFront(tile)
-        //保存数字块视图和数字块上数字的键，是 NSIndexPath 类型
-        var index = NSIndexPath(forRow: row, inSection: col)
-        tiles[index] = tile
-        tileVals[index] = value
-        //设置动画的初始状态
-        //如果不需要动画
-        if(atype == Animation2048Type.None)
-        {
-            return
-        }
-        else if(atype == Animation2048Type.New) //新生成数字
-        {
-            tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.1,0.1))
-        }
-        else if(atype == Animation2048Type.Merge) //合并中的数字
-        {
-            tile.layer.setAffineTransform(CGAffineTransformMakeScale(0.8,0.8))
-        }
-        UIView.animateWithDuration(0.3, delay:0.1, options:UIViewAnimationOptions.TransitionNone, animations:
-            {
-                ()-> Void in
-                tile.layer.setAffineTransform(CGAffineTransformMakeScale(1,1))
-            },
-            completion:{
-                (finished:Bool) -> Void in
-                UIView.animateWithDuration(0.08, animations:{
-                    ()-> Void in
-                    tile.layer.setAffineTransform(CGAffineTransformIdentity)
-                })
-                
-        })
-    }
-
-
+    
 }
